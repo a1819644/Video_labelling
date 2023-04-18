@@ -2,6 +2,8 @@ from ultralytics import YOLO
 import cv2
 import supervision 
 import pandas as pd
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 
 def main():
@@ -48,24 +50,35 @@ def main():
             break
 
 def creating_dataframe(model, detections):
+
     temp_tracker_id = [
-            f"{tracker_id}"
+            tracker_id
             for _,_,_,_,tracker_id,
             in detections
         ]
     labels_tracker_id.append(temp_tracker_id)
     temp_tracker_class_name = [
-            f"{model.model.names[class_id]}"
+            model.model.names[class_id]
             for _,_,_,class_id,_,
             in detections
         ]
     labels_tracker_class_name.append(temp_tracker_class_name)
     temp_tracker_bboxe = [
-            f"{xyxy}"
-            for xyxy,_,_,_,_,
+            xyxy
+            for xyxy,_,_,_,_,         
             in detections
         ]
     labels_tracker_bbox.append(temp_tracker_bboxe)
+    
+    #creating another df for the distance calculation purposes
+    df_for_meassurements = pd.DataFrame(columns=columns_name, index=row_name)
+    for _,_,_,class_id,tracker_id in detections:
+        columns_name.append(model.model.names[class_id])
+        row_name.append(tracker_id)
+    df_for_meassurements.to_csv("calculation_dis.csv")
+    print(df_for_meassurements)
+
+
     creating_dframe = pd.DataFrame({"tracker_ids":labels_tracker_id,
                                     "tracker_class_name":labels_tracker_class_name,
                                     "bounding_boxes":labels_tracker_bbox} )
@@ -81,6 +94,8 @@ def add_new_track_id(found_tracking_ids, detections):
 
 
 if __name__ == "__main__":
+    columns_name = []
+    row_name = []
     labels_tracker_id = []
     labels_tracker_class_name=[]
     labels_tracker_bbox = []
