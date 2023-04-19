@@ -2,9 +2,6 @@ from ultralytics import YOLO
 import cv2
 import supervision 
 import pandas as pd
-import os
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-
 
 def main():
     model = YOLO("yolov8s.pt") # load the model
@@ -30,8 +27,8 @@ def main():
 
 
         labels = [
-            f"{tracker_id} {model.model.names[class_id]} {confidence: 0.2f}"
-            for _,_,confidence,class_id,tracker_id,
+            f"{xyxy}{tracker_id} {model.model.names[class_id]} {confidence: 0.2f}"
+            for xyxy,_,confidence,class_id,tracker_id,
             in detections
         ]
         print(labels)
