@@ -17,6 +17,7 @@ def main():
     #track the results and show = 0 means the camera opening return the frames
     for result in model.track(source="two_p.mp4", show=True, iou=0.5, stream=True):
         frame = result.orig_img
+        print(result.boxes.data)
 
         # lets store the frames in the supervision to do all the trackin things
         detections = supervision.Detections.from_yolov8(result)

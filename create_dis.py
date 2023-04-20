@@ -36,16 +36,17 @@ def main(read_dframe, read_calculation):
 
 def get_distances(rect1, rect2, arrays):
     # manually putted the weight and height of the frame
-    w = 1920
-    h = 1080
+    w = 416
+    h = 234
     distance = 0
     rect1x1, rect1y1, rect1x2, rect1y2 = pascal_voc_to_yolo(rect1[0], rect1[1], rect1[2], rect1[3],w,h)
     # print(rect1x1, rect1y1, rect1x2, rect1y2)
     rect2x1, rect2y1, rect2x2, rect2y2 = pascal_voc_to_yolo(rect2[0], rect2[1], rect2[2], rect2[3],w,h)
-
+    
     #getting the center of the rectangle
-    cx1, cy1 = int(rect1[0] + rect1[2] / 2), int(rect1[1] + rect1[3]/ 2)
-    cx2, cy2 = int(rect2[0] +   rect2[2]/2), int(rect2[1] + rect2[3] / 2)
+    print((rect1))
+    cx1, cy1 = int(rect1[0] + rect1[2] / 2), int((rect1[1]+ 1000.0) + rect1[3]/ 2)
+    cx2, cy2 = int(rect2[0] +   rect2[2]/2), int((rect2[1]+1000.0) + rect2[3] / 2)
     dis = (math.sqrt(((cx2 - cx1) ** 2) + ((cy2 - cy1) ** 2)) ** 0.5)
     dis = int(dis)
     print(dis)
