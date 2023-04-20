@@ -45,8 +45,8 @@ def get_distances(rect1, rect2, arrays):
     
     #getting the center of the rectangle
     print((rect1))
-    cx1, cy1 = int(rect1[0] + rect1[2] / 2), int((rect1[1]+ 1000.0) + rect1[3]/ 2)
-    cx2, cy2 = int(rect2[0] +   rect2[2]/2), int((rect2[1]+1000.0) + rect2[3] / 2)
+    cx1, cy1 = int(rect1[0] + rect1[2] / 2), int(rect1[1] + rect1[3]/ 2)
+    cx2, cy2 = int(rect2[0] +   rect2[2]/2), int(rect2[1] + rect2[3] / 2)
     dis = (math.sqrt(((cx2 - cx1) ** 2) + ((cy2 - cy1) ** 2)) ** 0.5)
     dis = int(dis)
     print(dis)
