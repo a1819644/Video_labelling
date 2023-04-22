@@ -1,4 +1,4 @@
 ,person1,person2,bench3
-person1,0,804,1121
-person2,804,0,316
-bench3,1121,316,0
+person1,0,804,1121       p1 is 804 and 1121 far from p2,b3
+person2,804,0,316        p2 is 804 and 316 far from p1,b3
+bench3,1121,316,0        b3 is 1121 and 316 far from p1,b3
