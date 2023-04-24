@@ -5,7 +5,7 @@ import math
 from scipy.spatial import distance as dist
 import os
 
-def main(read_dframe, read_calculation):
+def main(read_dframe):
     x = None
     count = 0;
     print("read_dframe")
@@ -47,6 +47,7 @@ def create_distances_df(distance_ls, read_dframe, count):
         ls.append(xz)       
     print(lsdata_class_name, lsdata_trackerId, count)
     df_for_meassurements = pd.DataFrame(distance_ls,columns=ls, index=ls)
+
     df_for_meassurements.to_csv(path+'/imp/'+str(count)+ '.csv', index=ls)
     # print(df_for_meassurements)
 
@@ -76,8 +77,7 @@ def euclidean_distance(vx, vy):
 
 if __name__ == "__main__":
     read_dframe = pd.read_csv('create_dframe.csv')
-    read_calculation = pd.read_csv('calculation_dis.csv')
     path = os.getcwd()
     if os.path.isdir('imp') == False:
         os.mkdir('imp')
-    main(read_dframe, read_calculation)
+    main(read_dframe)
