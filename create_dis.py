@@ -48,7 +48,7 @@ def create_distances_df(distance_ls, read_dframe, count):
     print(lsdata_class_name, lsdata_trackerId, count)
     df_for_meassurements = pd.DataFrame(distance_ls,columns=ls, index=ls)
 
-    df_for_meassurements.to_csv(path+'/imp/'+str(count)+ '.csv', index=ls)
+    df_for_meassurements.to_csv(path+'/distance_tracking/'+str(count)+ '.csv', index=ls)
     # print(df_for_meassurements)
 
     
@@ -66,9 +66,6 @@ def get_distances(rect1, rect2, arrays):
     #calculating the distance between the centre point and returning the distace     
     return euclidean_distance(centreRect1, centreRect2)
 
-#get midpoint
-def midpoint(ptA, ptB):
-    return int((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
 
 #get distance between center
 def euclidean_distance(vx, vy):
@@ -78,6 +75,6 @@ def euclidean_distance(vx, vy):
 if __name__ == "__main__":
     read_dframe = pd.read_csv('create_dframe.csv')
     path = os.getcwd()
-    if os.path.isdir('imp') == False:
-        os.mkdir('imp')
+    if os.path.isdir('files') == False:
+        os.mkdir('movements_tracking')
     main(read_dframe)
