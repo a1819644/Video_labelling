@@ -4,27 +4,25 @@ from numpy import float32, array
 import math
 from scipy.spatial import distance as dist
 import os
-import functools
+
 
 
 def main(read_dframe):
     x = None
-    count = 0;
-    get_count_tracking  =0
+    rowcount = 0
+    get_count_tracking_current= 5
+    get_count_tracking_prev = 4
+    for i in range(len(read_dframe.index)):
+        if rowcount >= 5:
+            get_tracked(x,get_count_tracking_prev,get_count_tracking_current) # sending the tracked objs bounding boxes
+            get_count_tracking_current = get_count_tracking_current + 5
+            get_count_tracking_prev = get_count_tracking_prev + 5
+            rowcount = 0
+        else:
+            rowcount= rowcount + 1
+        print(i)
 
-    # reading the bounding box data from each row
-    for column in read_dframe.loc[:,'bounding_boxes']:
-        # Iterate over column names
-        x = eval(column)
-        get_current_row =0
-        print(x)
-        # for i in x:
-        #     length = len(i)
-        #     print(i)
-        #     create_tracking_movement_df(read_dframe, count)
-        #     count +1
-        get_tracked(x, get_count_tracking) # sending the tracked objs bounding boxes
-        get_count_tracking = get_count_tracking + 5
+
 
 # # def create_tracking_movement_df(i, read_dframe, count, get_count_tracking):
 #     copy_rdframe = read_dframe.copy()
@@ -50,52 +48,89 @@ def main(read_dframe):
 
 # tracking the objects one by one
 # count to check is this the first array from the first arrays
-def get_tracked(current_array, get_count_tracking):
-    if get_count_tracking == 0:
+def get_tracked(current_array, get_count_tracking_prev, get_count_tracking_current):
+    if  get_count_tracking_prev == 4: ## i know its the first loop  as predifined earlier
         prev_list.append(current_array)
+        # print(current_array , "current and previous arrays are the same")
+
+        for prev in prev_list:
+            corrected_prev_list = check_tracking_to_bounding_boxes_loc_fix(get_count_tracking_prev,get_count_tracking_current)
     else:
+        # print(prev_list, "previous array", get_count_tracking_prev)
+        # print(current_array, "current array", get_count_tracking_current)
         for prev in prev_list:
             # checking if the prev and cur arrays coming from the same tracking ids
-            # if not then change it
-            # print(prev , "prev", get_count_tracking)
-            # print(current_array, "current", get_count_tracking)
-            corrected_prev_list = check_tracking_to_bounding_boxes_loc_fix(prev,get_count_tracking)
+            dic_current, dic_previous = check_tracking_to_bounding_boxes_loc_fix(get_count_tracking_prev,get_count_tracking_current)
+            was_stayed = _is_stay_still(dic_current, dic_previous)
             
+    # print(current_array , "dsjkadsjashdjdsaj currrrent going to be the pre")
     prev_list.clear()
     prev_list.append(current_array)
 
 
-# correcting the order of the inserted arrays
-def check_tracking_to_bounding_boxes_loc_fix(prev, get_count_tracking):
-    copy_rdframe = read_dframe.copy() # copying the original csv
-    correct_order_list =[]
 
+# stay_still calculation between pre and current arrays
+def _is_stay_still(dic_current, dic_previous):
+    result = []# staying false  and 1 for the true
+    
+    # looping through dictonary of current, if the key/tracking id doesnt exist than we can move on 
+    for key, value in dic_current.items():
+        if key in dic_previous:
+            prev_mid_point,curr_mid_point =mid_bounding_boxes(dic_previous[key], dic_current[key])
+            result.append(comparing_dis_mid_points(prev_mid_point, curr_mid_point))
+            
+    print(result)
+    # get_mid_boxes = 
+    
+    # print(get_mid_boxes)
+    
+    return result
+
+
+#get distance between centers
+def comparing_dis_mid_points(vx, vy):
+    for x, y in zip(vx, vy):
+        if x == y or x >= y+10 or y >= x+10: # tolerance between 10 px 
+            return 1 # for the true
+        else:
+            return 0 # false 
+
+
+
+# correcting the order of the inserted arrays
+def check_tracking_to_bounding_boxes_loc_fix( get_count_tracking_prev,get_count_tracking_current ):
+    copy_rdframe = read_dframe.copy() # copying the original csv
     # get the list of the tracking from the same row /frame index
-    if get_count_tracking <= len(copy_rdframe.index):
-        lsdata_trackerId_current = eval(copy_rdframe.iloc[get_count_tracking,1]) #this shows the current one
-        get_prev_lsa_index = eval(copy_rdframe.iloc[get_count_tracking-5,1])
-        print(get_prev_lsa_index , "get_prev_lsa_index --data", eval(copy_rdframe.iloc[get_count_tracking-5,3]))
-        print(lsdata_trackerId_current, "current tracking--> data",eval(copy_rdframe.iloc[get_count_tracking,3]))
+    if get_count_tracking_current < len(copy_rdframe.index):
+        lsdata_trackerId_current = eval(copy_rdframe.iloc[ get_count_tracking_current,1]) #this shows the current one
+        get_prev_lsa_index = eval(copy_rdframe.iloc[get_count_tracking_prev,1])
         
-        # filling the correct_order_list using current lsdata_trackerId_current id
-        for i in lsdata_trackerId_current:
-            get_val = i
-            get_index = 0
-            for x in get_prev_lsa_index:
-                if x == i:
-                    correct_order_list.append(prev[get_index])
-                    break                    
-                else:
-                    get_index = get_index + 1
-        print( "fixes .... prev", correct_order_list)
-    return correct_order_list
+        # imp dont delete the below comment
+        print(lsdata_trackerId_current, "current tracking--> data",eval(copy_rdframe.iloc[get_count_tracking_current,3]))
+        print(get_prev_lsa_index , "get_prev_lsa_index --data", eval(copy_rdframe.iloc[get_count_tracking_prev,3]))
         
-# #calculate the the mid point of bounding boxes
-# def mid_bounding_boxes(pre_array, current_array):
-#     # calculating the mid distance between rect1 and rect2
-#     prev = (pre_array[0] + (pre_array[2]/2), pre_array[1] + (pre_array[3]/2))
-#     curr = (current_array[0] + (current_array[2]/2), current_array[1] + (current_array[3]/2))
-#     return prev, curr
+        current = eval(copy_rdframe.iloc[get_count_tracking_current,3])
+        previous = eval(copy_rdframe.iloc[get_count_tracking_prev,3])
+        dic_current = {}
+        for key, value in zip(lsdata_trackerId_current,current): 
+            dic_current[key] = value
+
+        dic_prev = {}
+        for key, value in zip(get_prev_lsa_index,previous): 
+            dic_prev[key] = value
+
+
+    return dic_current, dic_prev
+
+#calculate the the mid point of bounding boxes
+def mid_bounding_boxes(pre_array, current_array):
+
+    # calculating the mid distance between rect1 and rect2
+    prev_mid = (pre_array[0] + (pre_array[2]/2), pre_array[1] + (pre_array[3]/2))
+    curr_mid = (current_array[0] + (current_array[2]/2), current_array[1] + (current_array[3]/2))
+    print(pre_array, "previous array", prev_mid )
+    print(current_array, "current array", curr_mid)
+    return prev_mid, curr_mid
 
 
 
