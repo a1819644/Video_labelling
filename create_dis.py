@@ -75,6 +75,6 @@ def euclidean_distance(vx, vy):
 if __name__ == "__main__":
     read_dframe = pd.read_csv('create_dframe.csv')
     path = os.getcwd()
-    if os.path.isdir('files') == False:
-        os.mkdir('movements_tracking')
+    if os.path.isdir('distance_tracking') == False:
+        os.mkdir('distance_tracking')
     main(read_dframe)

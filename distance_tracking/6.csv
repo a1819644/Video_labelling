@@ -1,3 +1,4 @@
-,person1,bench3
-person1,0,1195
-bench3,1195,0
+,person1,person2,bench3
+person1,0,814,1226
+person2,814,0,413
+bench3,1226,413,0
