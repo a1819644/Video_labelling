@@ -2,6 +2,7 @@
 import pandas as pd
 import os
 from pathlib import Path
+import statistics
 
 def main():
     
@@ -17,29 +18,73 @@ def main():
     
     
     # funciton to analyze the movement_tracks_allinone whether the object was moving or not
-    has_moved(mov_without_notMoving, movements_name)
-    
+    result_moving = has_moved(mov_without_notMoving, movements_name)
+    analyzing_movingness(result_moving)
     # analyze closeness of the detected objects (using distance_tracking files)
     distance_tracks_allinone_new = distance_tracks_allinone.sort_values(by='filename', ascending=True)
-    print(distance_tracks_allinone_new.head(10))
+    print(distance_tracks_allinone_new.head(20), "distance_tracks_allinone")
 
     distance_name = list(distance_tracks_allinone_new.columns.values)
     distance_name.remove('Unnamed: 0')
     distance_name.remove('filename')
-    print(distance_name)
+    # print(distance_name)
+
+    resultfortogetherness = who_is_together(distance_tracks_allinone_new, distance_name)
+    analyzing_togetherness(resultfortogetherness)
+    print(result_togetherness_record)
+
+
+def analyzing_movingness(result_movingness):
+    for k, v in result_movingness.items():
+        if v <= 0.50:
+            result_togetherness_record.append( k +togetherness_record[2]) ## found moving
+
+
+def analyzing_togetherness(resultfortogetherness):
+    for k, v in resultfortogetherness.items():
+        if v >= 0.60:
+            result_togetherness_record.append(k +togetherness_record[1]) ## found together
+        else:
+            result_togetherness_record.append(k +togetherness_record[0]) ## found together
+
+
+def who_is_together(distance_tracks_allinone_new, distance_name):
+    dic_record = {}
+    dic_record_keys = set()
+    # print(dic_record)
+    # {'person1-person1': [], 'person1-person2': [], 'person1-bench3': [], 
+    # 'person2-person1': [], 'person2-person2': [], 'person2-bench3': [], 
+    # 'bench3-person1': [], 'bench3-person2': [], 'bench3-bench3': []}
+    altr_name = []
+    names = []
+    space_in_between = " "
+    for i in range(len(distance_tracks_allinone_new)):
+        name = ""
+        for j in range(len(distance_name)):
+            if distance_name[j] != distance_tracks_allinone_new.iloc[i,0]:
+                name =  distance_tracks_allinone_new.iloc[i,0] +space_in_between+ distance_name[j]
+                dic_record[name] = []
+
+    for i in range(len(distance_tracks_allinone_new)):
+        name = ""
+        for j in range(len(distance_name)):
+            if distance_name[j] != distance_tracks_allinone_new.iloc[i,0]:
+                name =  distance_tracks_allinone_new.iloc[i,0] +space_in_between+ distance_name[j]
+                val = distance_tracks_allinone_new.iloc[i,j +1]
+                if val < 550: 
+                    dic_record[name].append(1) # 1 for close
+                else:
+                    dic_record[name].append(0) # 0 for far
+                
+    # print(dic_record)
     
-    name = 0
-    for i in range(5):
-        i = {}
-        print(type(i))
+    dic_result = {} # storing the result from the dic_record
+    for k,v in dic_record.items():
+        dic_result[k] = statistics.mean(v)
     
-    # for names in distance_name:
-    for row in distance_tracks_allinone_new.index:
-            print(distance_tracks_allinone["person1"][row])
-    
-    
-    
-    
+    print(dic_result)
+    return dic_result
+
     
 def has_moved(mov_without_notMoving, movements_name):
     # looping through the movement_tracks_allinone df and analyzing the movements tracking
@@ -48,11 +93,13 @@ def has_moved(mov_without_notMoving, movements_name):
     for names in movements_name:
         dic_tracking_movements[names] = mov_without_notMoving[names].mean(skipna = True)
     
-    # print(dic_tracking_movements) # {'person': 0.030303030303030304, 'bench': 0.7878787878787878, 'person.1': 0.0} this the result produced by it
-
+    return dic_tracking_movements
 
 
 if __name__ == "__main__":
+    togetherness_record = [" were faraway from each others", " were together", " were moving"]
+    result_togetherness_record =[]
+    
     # Get CSV files list from a folder
     path_movements_path = r'movements_tracking'
     path_dis_tracking_path = r'distance_tracking'
@@ -65,8 +112,7 @@ if __name__ == "__main__":
     #for distance_tracking folder
     cv_distance_tracking_files = Path(path_dis_tracking_path).glob('*.csv')
     dfs_distance = list()
-    
-    distance_tracks_allinone = pd.concat((pd.read_csv(f).assign(filename=f.stem) for f in cv_distance_tracking_files), ignore_index=True)
+    distance_tracks_allinone = pd.concat((pd.read_csv(f).assign(filename=f.stem) for f in cv_distance_tracking_files), ignore_index=False)
     distance_tracks_allinone.to_csv("distance_tracks_allinone.csv")
     # print(distannce_tracks_allinone.head(10))
     main()
