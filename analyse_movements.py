@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from pathlib import Path
 import statistics
+import glob
 
 def main():
     
@@ -21,7 +22,10 @@ def main():
     result_moving = has_moved(mov_without_notMoving, movements_name)
     analyzing_movingness(result_moving)
     # analyze closeness of the detected objects (using distance_tracking files)
-    distance_tracks_allinone_new = distance_tracks_allinone.sort_values(by='filename', ascending=True)
+    print(distance_tracks_allinone.head(10))
+    distance_tracks_allinone.to_csv("before_sorting_just.csv")
+    distance_tracks_allinone_new = distance_tracks_allinone.sort_values(by='filename')
+    distance_tracks_allinone_new.to_csv("just.csv")
     print(distance_tracks_allinone_new.head(20), "distance_tracks_allinone")
 
     distance_name = list(distance_tracks_allinone_new.columns.values)
@@ -97,7 +101,7 @@ def has_moved(mov_without_notMoving, movements_name):
 
 
 if __name__ == "__main__":
-    togetherness_record = [" were faraway from each others", " were together", " were moving"]
+    togetherness_record = [" were faraway from each others", " were together", " were walking"]
     result_togetherness_record =[]
     
     # Get CSV files list from a folder
@@ -112,7 +116,22 @@ if __name__ == "__main__":
     #for distance_tracking folder
     cv_distance_tracking_files = Path(path_dis_tracking_path).glob('*.csv')
     dfs_distance = list()
-    distance_tracks_allinone = pd.concat((pd.read_csv(f).assign(filename=f.stem) for f in cv_distance_tracking_files), ignore_index=False)
+    distance_tracks_allinone = pd.concat((pd.read_csv(f).assign(filename=f.stem) for f in cv_distance_tracking_files), ignore_index=True)
     distance_tracks_allinone.to_csv("distance_tracks_allinone.csv")
     # print(distannce_tracks_allinone.head(10))
+    
+    dfs = list()
+    
+    cv_distance_tracking_files22 =sorted(glob.glob('*.csv'))
+
+    for f in cv_distance_tracking_files22:
+        data = pd.read_csv(f)
+        # .stem is method for pathlib objects to get the filename w/o the extension
+        data['file'] = f.stem
+        dfs.append(data)
+
+    df = pd.concat(dfs, ignore_index=True)
+
+    df.to_csv("dfs.csv")
+    
     main()

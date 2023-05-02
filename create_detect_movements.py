@@ -125,8 +125,10 @@ def check_tracking_to_bounding_boxes_loc_fix( get_count_tracking_prev,get_count_
             temp_dic_names[key] = value
             
         filtered_names = []
-        for values in temp_dic_names.values():
-            filtered_names.append(values)
+        
+        for values,traking_id in zip(temp_dic_names.values(), get_prev_lsa_index):
+            names = values+str(traking_id)
+            filtered_names.append(names)
 
         print(filtered_names, "filtered names......")
     return dic_current, dic_prev, filtered_names
