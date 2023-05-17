@@ -15,9 +15,10 @@ def main():
 
 
     #track the results and show = 0 means the camera opening return the frames
-    for result in model.track(source="two_p.mp4", show=True, iou=0.5, stream=True):
+    for result in model.track(source="personinrain.mp4", show=True, iou=0.5, stream=True):
         frame = result.orig_img
-        print(result.boxes.data)
+        # print(result.boxes.data)
+        print(model.names)
 
         # lets store the frames in the supervision to do all the trackin things
         detections = supervision.Detections.from_yolov8(result)
@@ -80,7 +81,7 @@ def creating_dataframe(model, detections):
     creating_dframe = pd.DataFrame({"tracker_ids":labels_tracker_id,
                                     "tracker_class_name":labels_tracker_class_name,
                                     "bounding_boxes":labels_tracker_bbox} )
-    creating_dframe.to_csv("create_dframe.csv")
+    creating_dframe.to_csv("create_dframe11.csv")
     return creating_dframe
         
 
