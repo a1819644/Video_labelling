@@ -114,10 +114,10 @@ def check_tracking_to_bounding_boxes_loc_fix( get_count_tracking_prev,get_count_
         list_merge_current = []
         list_merge_pervious = []
         for i,j in zip(lsdata_name_current, lsdata_trackerId_current):
-            list_merge_current.append(i + " number: " + str(j))
+            list_merge_current.append(i + ":" + str(j))
         
         for i, j in zip(lsda_name_prev, lsda_trackerId_prev):
-            list_merge_pervious.append(i + " number: " + str(j))
+            list_merge_pervious.append(i + ":" + str(j))
         
         # imp dont delete the below comment
         # print(lsdata_trackerId_current, "current --> data",eval(copy_rdframe.iloc[get_count_tracking_current,3]))

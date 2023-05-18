@@ -19,10 +19,10 @@ def main():
     mov_without_notMoving = set_index_for_movements.drop("moving")
     # print(mov_without_notMoving.head(10))
     
+
     
-    # funciton to analyze the movement_tracks_allinone whether the object was moving or not
-    result_moving = has_moved(mov_without_notMoving, movements_name)
-    analyzing_movingness(result_moving)
+    
+
     # analyze closeness of the detected objects (using distance_tracking files)
     # print(distance_tracks_allinone.head(10))
     distance_tracks_allinone.to_csv("before_sorting_just.csv")
@@ -35,11 +35,20 @@ def main():
     # print(distance_name)
 
     resultfortogetherness = who_is_together(distance_tracks_allinone_new, distance_name)
+    
+    
     analyzing_togetherness(resultfortogetherness)
+    
+    # funciton to analyze the movement_tracks_allinone whether the object was moving or not
+    result_moving = has_moved(mov_without_notMoving, movements_name)
+    analyzing_movingness(result_moving)
+    
     print(result_togetherness_record)
 
 
 def analyzing_movingness(result_movingness):
+    
+        
     for k, v in result_movingness.items():
         if v <= 0.60:
             result_togetherness_record.append(k +togetherness_record[2]) ## found moving
@@ -57,13 +66,11 @@ def analyzing_togetherness(resultfortogetherness):
 def who_is_together(distance_tracks_allinone_new, distance_name):
     dic_record = {}
     name_count  = []
-    
+
     # print(dic_record)
     # {'person1-person1': [], 'person1-person2': [], 'person1-bench3': [], 
     # 'person2-person1': [], 'person2-person2': [], 'person2-bench3': [], 
     # 'bench3-person1': [], 'bench3-person2': [], 'bench3-bench3': []}
-    altr_name = []
-    names = []
     space_in_between = " "
     for i in range(len(distance_tracks_allinone_new)):
         name = ""
@@ -95,14 +102,21 @@ def who_is_together(distance_tracks_allinone_new, distance_name):
         dic_name_count[key] = value
 
     #we will keep only the top 5 objects are relations only! and deleting rest of the keys and values from the dic_record dictionary
-    first5pairs = {k: dic_name_count[k] for k in list(dic_name_count)[:5]}  
-    remKeylist = []
+    first5pairs = {k: dic_name_count[k] for k in list(dic_name_count)[:5]} 
+
+    for k,v in first5pairs.items(): 
+        top_5_keys.append(k)
+    # print(first5pairs, "first5pairs")
+    
     # print(len(dic_record), "before")
     for k,v in dic_record.items():
             get_object_names_in_list_frmt = k.split() # get the object names
+            # print(get_object_names_in_list_frmt)
             if get_object_names_in_list_frmt[0] in first5pairs or get_object_names_in_list_frmt[1] in first5pairs: 
                 remKeylist.append(k)
     
+    # print(remKeylist, "remkeylist")
+
     # removing the keys fromt the dic_record
     for key in remKeylist:
         del dic_record[key]
@@ -115,19 +129,29 @@ def who_is_together(distance_tracks_allinone_new, distance_name):
     return dic_result
 
     
-def has_moved(mov_without_notMoving, movements_name):
+def has_moved(notMoving, movements_name):
     # looping through the movement_tracks_allinone df and analyzing the movements tracking
     dic_tracking_movements ={}
-    
+    # print(notMoving)
     for names in movements_name:
-        dic_tracking_movements[names] = mov_without_notMoving[names].mean(skipna = True)
+        dic_tracking_movements[names] = notMoving[names].mean(skipna = True)
     
+    # print(len(dic_tracking_movements), "before removal")
+    # now removing which shows the least in the video
+    for key in range(len(top_5_keys)):
+        if top_5_keys[key] in dic_tracking_movements:
+            del dic_tracking_movements[top_5_keys[key]]
+
+    
+    # print(len(dic_tracking_movements), "after removal")   
     return dic_tracking_movements
 
 
 if __name__ == "__main__":
-    togetherness_record = [" were faraway from each others", " were together", " was walking"]
+    togetherness_record = [" were far away from each others", " were together", " was walking"]
     result_togetherness_record =[]
+    remKeylist = []
+    top_5_keys = []
     
     # for movements tracking folder
     cv_movements_tracking_files = sorted(glob('movements_tracking/*.csv'))

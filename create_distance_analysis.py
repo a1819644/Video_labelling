@@ -43,7 +43,7 @@ def create_distances_df(distance_ls, read_dframe, count):
     lsdata_class_name = eval(copy_rdframe.iloc[count,2])
     ls = []
     for track, class_name in zip(lsdata_trackerId,lsdata_class_name):
-        xz = str(class_name)+str(track)
+        xz = str(class_name)+":"+str(track)
         ls.append(xz)       
     print(lsdata_class_name, lsdata_trackerId, count)
     df_for_meassurements = pd.DataFrame(distance_ls,columns=ls, index=ls)
