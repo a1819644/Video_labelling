@@ -2,6 +2,22 @@ from ultralytics import YOLO
 import cv2
 import supervision 
 import pandas as pd
+import os
+import numpy as np
+from numpy import float32, array
+import math
+from scipy.spatial import distance as dist
+import create_distance_analysis as create_distance_analysis
+import pandas as pd
+import numpy as np
+from numpy import float32, array
+import math
+from scipy.spatial import distance as dist
+import os
+# import create_detect_movements as create_detect_movements
+
+
+
 
 def main():
     model = YOLO("yolov8s.pt") # load the model
@@ -15,7 +31,7 @@ def main():
 
 
     #track the results and show = 0 means the camera opening return the frames
-    for result in model.track(source="personinrain.mp4", show=True, iou=0.5, stream=True):
+    for result in model.track(source="people_watchingbirds.mp4", show=True, iou=0.5, stream=True):
         frame = result.orig_img
         # print(result.boxes.data)
         print(model.names)
@@ -81,7 +97,7 @@ def creating_dataframe(model, detections):
     creating_dframe = pd.DataFrame({"tracker_ids":labels_tracker_id,
                                     "tracker_class_name":labels_tracker_class_name,
                                     "bounding_boxes":labels_tracker_bbox} )
-    creating_dframe.to_csv("create_dframe11.csv")
+    creating_dframe.to_csv("create_dframe.csv")
     return creating_dframe
         
 
@@ -99,5 +115,19 @@ if __name__ == "__main__":
     labels_tracker_class_name=[]
     labels_tracker_bbox = []
     main()
+
+    # calling create_detect_movements_py file   
+    with open("create_detect_movements.py") as create_detect_movements:
+        exec(create_detect_movements.read())
+
+    # calling create_distance_analysis.py file   
+    with open("create_distance_analysis.py") as create_distance_analysis:
+        exec(create_distance_analysis.read())
+        
+    # calling create_distance_analysis.py file   
+    with open("analyse_movements.py") as analyse_movements:
+        exec(analyse_movements.read())
+
+    
 
     

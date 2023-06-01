@@ -32,18 +32,17 @@ def main():
 
     distance_name = list(distance_tracks_allinone_new.columns.values)
     distance_name.remove('Unnamed: 0')
-    # print(distance_name)
+    # print(len(distance_tracks_allinone_new))
 
     resultfortogetherness = who_is_together(distance_tracks_allinone_new, distance_name)
-    
-    
+    # print(resultfortogetherness)
     analyzing_togetherness(resultfortogetherness)
     
     # funciton to analyze the movement_tracks_allinone whether the object was moving or not
     result_moving = has_moved(mov_without_notMoving, movements_name)
     analyzing_movingness(result_moving)
     
-    print(result_togetherness_record)
+    print(result_togetherness_record) 
 
 
 def analyzing_movingness(result_movingness):
@@ -88,12 +87,11 @@ def who_is_together(distance_tracks_allinone_new, distance_name):
                 name =  distance_tracks_allinone_new.iloc[i,0] + space_in_between + distance_name[j]
                 val = distance_tracks_allinone_new.iloc[i,j +1]
                 # print(type(val))
-                if val < 550: 
+                if val < 700: 
                         dic_record[name].append(1) # 1 for close
                 else:
                         dic_record[name].append(0) # 0 for far
                         
-
     # arranging in the descending order 
     dic_name_count = Counter(name_count)
     sorted_list = sorted(dic_name_count.items(), key = lambda x:x[1], reverse = True)
@@ -106,7 +104,7 @@ def who_is_together(distance_tracks_allinone_new, distance_name):
 
     for k,v in first5pairs.items(): 
         top_5_keys.append(k)
-    # print(first5pairs, "first5pairs")
+    
     
     # print(len(dic_record), "before")
     for k,v in dic_record.items():
@@ -120,12 +118,13 @@ def who_is_together(distance_tracks_allinone_new, distance_name):
     # removing the keys fromt the dic_record
     for key in remKeylist:
         del dic_record[key]
-    # print(len(dic_record), "after")
+    print(len(dic_record), "after")
     
     dic_result = {} # storing the result from the dic_record
     for k,v in dic_record.items():
         dic_result[k] = statistics.mean(v)
-        
+
+    
     return dic_result
 
     
@@ -163,7 +162,7 @@ if __name__ == "__main__":
     distance_tracks_allinone = pd.concat((pd.read_csv(file) for file in cv_distance_tracking_files), axis='index')
     distance_tracks_allinone.to_csv("distance_tracks_allinone.csv")
     
-    # print(distance_tracks_allinone.head(10))
+    # print(movement_tracks_allinone.head(10))
     
     
     main()
