@@ -1,5 +1,6 @@
 api_chat.txt
 .DS_Store
+.logs
 distance_tracking/
 movements_tracking/
 before_sorting_just.csv
@@ -8,4 +9,4 @@ create_dframe.csv
 test
 distance_tracks_allinone.csv
 just.csv
-movements_tracking_allinone.csv
+csv

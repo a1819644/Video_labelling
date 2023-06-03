@@ -1,6 +1,0 @@
-,car:1,motorcycle:2,person:3,person:5,motorcycle:6
-car:1,0,1536,1497,721,747
-motorcycle:2,1536,0,391,863,795
-person:3,1497,391,0,776,768
-person:5,721,863,776,0,130
-motorcycle:6,747,795,768,130,0
