@@ -1,3 +1,3 @@
-,person:119,person:377,person:566,person:583,person:587,person:596,person:641,person:648,person:652,bird:656,backpack:658
-not_moving,0,0,0,0,0,0,0,0,0,0,0
-moving,1,1,1,1,1,1,1,1,1,1,1
+,car:1,motorcycle:2,person:3,person:5,motorcycle:6,car:8,car:10,car:13
+not_moving,0,0,0,0,0,0,1,0
+moving,1,1,1,1,1,1,0,1

@@ -18,7 +18,6 @@ import os
 
 
 
-
 def main():
     model = YOLO("yolov8s.pt") # load the model
     
@@ -27,14 +26,15 @@ def main():
         thickness=1,
         text_thickness=1,
         text_scale= 0.5
+        
     )
 
 
     #track the results and show = 0 means the camera opening return the frames
-    for result in model.track(source="people_watchingbirds.mp4", show=True, iou=0.5, stream=True):
+    for result in model.track(source="people_riding_on_motorcycle.mp4", show=False, iou=0.5, stream=False):
         frame = result.orig_img
         # print(result.boxes.data)
-        print(model.names)
+        # print(model.names)
 
         # lets store the frames in the supervision to do all the trackin things
         detections = supervision.Detections.from_yolov8(result)
@@ -59,13 +59,12 @@ def main():
         
         
         frame = box_annotator.annotate(scene=frame, detections=detections, labels=labels)
-        cv2.imshow("yolov8",frame) # to pring the curr frame on the screen
+        # cv2.imshow("yolov8",frame) # to pring the curr frame on the screen
 
         if(cv2.waitKey(30)  == 27): # kill the run 
             break
 
 def creating_dataframe(model, detections):
-
     temp_tracker_id = [
             tracker_id
             for _,_,_,_,tracker_id,
