@@ -31,7 +31,7 @@ def main():
 
 
     #track the results and show = 0 means the camera opening return the frames
-    for result in model.track(source="people_riding_on_motorcycle.mp4", show=False, iou=0.5, stream=False):
+    for result in model.track(source="Passengers Disembarking An Airplane In Montreal Airport.mp4", show=True, iou=0.5, stream=True):
         frame = result.orig_img
         # print(result.boxes.data)
         # print(model.names)
@@ -113,6 +113,7 @@ if __name__ == "__main__":
     labels_tracker_id = []
     labels_tracker_class_name=[]
     labels_tracker_bbox = []
+
     main()
 
     # calling create_detect_movements_py file   
@@ -127,6 +128,31 @@ if __name__ == "__main__":
     with open("analyse_movements.py") as analyse_movements:
         exec(analyse_movements.read())
 
-    
+    # if os.path.exists("distance_tracks_allinone.csv"):
+    #   os.remove("distance_tracks_allinone.csv")
+    # if os.path.exists("before_sorting_just.csv"):
+    #   os.remove("before_sorting_just.csv")
+    # if os.path.exists("create_dframe.csv"):
+    #   os.remove("create_dframe.csv")
+    # if os.path.exists("calculation_dis.csv"):
+    #   os.remove("calculation_dis.csv")
+    # if os.path.exists("movement_tracks_allinone.csv"):
+    #   os.remove("movement_tracks_allinone.csv")
 
-    
+    # path_distance_tracking = ('distance_tracking')
+    # path_movements_tracking = ('movements_tracking')
+    # for filename in os.listdir(path_distance_tracking):
+    #     file_path = os.path.join(path_distance_tracking, filename)
+    #     try:
+    #         if os.path.isfile(file_path) or os.path.islink(file_path):
+    #             os.unlink(file_path)
+    #     except Exception as e:
+    #         print('Failed to delete %s. Reason: %s' % (file_path, e))
+
+    # for filename in os.listdir(path_movements_tracking):
+    #     file_path = os.path.join(path_movements_tracking, filename)
+    #     try:
+    #         if os.path.isfile(file_path) or os.path.islink(file_path):
+    #             os.unlink(file_path)
+    #     except Exception as e:
+    #         print('Failed to delete %s. Reason: %s' % (file_path, e))

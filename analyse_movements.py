@@ -40,17 +40,23 @@ def main():
     
     # funciton to analyze the movement_tracks_allinone whether the object was moving or not
     result_moving = has_moved(mov_without_notMoving, movements_name)
-    analyzing_movingness(result_moving)
+    is_moving_reclst, isnt_moving_reclst = analyzing_movingness(result_moving)
     
-    print(result_togetherness_record) 
+    return result_togetherness_record, is_moving_reclst, isnt_moving_reclst
 
 
 def analyzing_movingness(result_movingness):
-    
+    is_moving_rec = []
+    isnt_moving_rec = []
         
     for k, v in result_movingness.items():
         if v <= 0.60:
-            result_togetherness_record.append(k +togetherness_record[2]) ## found moving
+            is_moving_rec.append(k + togetherness_record[2])
+            ## found moving
+        else:
+            isnt_moving_rec.append(k + togetherness_record[3])
+    return is_moving_rec, isnt_moving_rec
+
 
 
 def analyzing_togetherness(resultfortogetherness):
@@ -129,13 +135,14 @@ def who_is_together(distance_tracks_allinone_new, distance_name):
 
     
 def has_moved(notMoving, movements_name):
+    # print(notMoving)
     # looping through the movement_tracks_allinone df and analyzing the movements tracking
     dic_tracking_movements ={}
     # print(notMoving)
     for names in movements_name:
         dic_tracking_movements[names] = notMoving[names].mean(skipna = True)
     
-    # print(len(dic_tracking_movements), "before removal")
+    print((dic_tracking_movements), "before removal")
     # now removing which shows the least in the video
     for key in range(len(top_5_keys)):
         if top_5_keys[key] in dic_tracking_movements:
@@ -147,7 +154,7 @@ def has_moved(notMoving, movements_name):
 
 
 if __name__ == "__main__":
-    togetherness_record = [" were far away from each others", " were together", " was walking"]
+    togetherness_record = [" were far away from each others", " were together", " was walking", "not woving"]
     result_togetherness_record =[]
     remKeylist = []
     top_5_keys = []
@@ -164,5 +171,7 @@ if __name__ == "__main__":
     
     # print(movement_tracks_allinone.head(10))
     
-    
-    main()
+    alltogether, moving_rec, not_moving = main() 
+    # print(moving_rec, "moving record")
+    # print(not_moving, "not_moving record")
+    # print(alltogether, "alltogether relationship record")

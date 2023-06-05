@@ -31,8 +31,9 @@ def get_tracked( get_count_tracking_prev, get_count_tracking_current):
     rows = ['not_moving', 'moving']
     dic_current, dic_previous = check_tracking_to_bounding_boxes_loc_fix(get_count_tracking_prev, get_count_tracking_current)
     not_moving, obj_names = _is_stay_still(dic_current, dic_previous) # not_moving values 
-    moved = moving(not_moving) # just fliping the values
+    print(not_moving, obj_names)
 
+    moved = moving(not_moving) # just fliping the values
     #this line must be run at the end 
     newList.append(not_moving)
     newList.append(moved)
@@ -41,7 +42,7 @@ def get_tracked( get_count_tracking_prev, get_count_tracking_current):
 
     # cause do the moving part to
     create_df = pd.DataFrame(newList, index=rows, columns=obj_names)
-    print(create_df, "thats df")
+    # print(create_df, "thats df")
 
     #saving the df files to movements_tracking folder
     create_df.to_csv(path+'/movements_tracking/'+str(get_count_tracking_current)+ '.csv')
@@ -66,7 +67,7 @@ def _is_stay_still(dic_current, dic_previous):
             prev_mid_point,curr_mid_point = mid_bounding_boxes(dic_previous[key], dic_current[key])
             result.append(comparing_dis_mid_points(prev_mid_point, curr_mid_point))
 
-    print((object_name), "this is result //////////////////////////////////////////////////////////////////")
+    # print((object_name), "this is result //////////////////////////////////////////////////////////////////")
     return result,object_name
 
 
@@ -87,8 +88,8 @@ def mid_bounding_boxes(pre_array, current_array):
         2, (pre_array[1] + (pre_array[3]))/2
     curr_mid = (current_array[0] + current_array[2]) / \
         2, (current_array[1] + current_array[3])/2
-    print(pre_array, "previous array", prev_mid)
-    print(current_array, "current array", curr_mid)
+    # print(pre_array, "previous array", prev_mid)
+    # print(current_array, "current array", curr_mid)
     return prev_mid, curr_mid
 
 # get distance between center
