@@ -7,6 +7,8 @@ from glob import glob
 import numpy as np
 from collections import Counter
 import collections
+import re
+
 
 def main():
     
@@ -18,14 +20,13 @@ def main():
     set_index_for_movements = movement_tracks_allinone.set_index("Unnamed: 0")
     mov_without_notMoving = set_index_for_movements.drop("moving")
     # print(mov_without_notMoving.head(10))
-    
 
-    
-    
+
+
+
 
     # analyze closeness of the detected objects (using distance_tracking files)
     # print(distance_tracks_allinone.head(10))
-    distance_tracks_allinone.to_csv("before_sorting_just.csv")
     distance_tracks_allinone_new = distance_tracks_allinone.copy()
     distance_tracks_allinone_new.to_csv("just.csv")
     # print(distance_tracks_allinone_new.head(20), "distance_tracks_allinone")
@@ -34,35 +35,44 @@ def main():
     distance_name.remove('Unnamed: 0')
     # print(len(distance_tracks_allinone_new))
 
+    # analyzing togetherness of the detected objects (using distance_tracking files)
     resultfortogetherness = who_is_together(distance_tracks_allinone_new, distance_name)
-    # print(resultfortogetherness)
     analyzing_togetherness(resultfortogetherness)
     
     # funciton to analyze the movement_tracks_allinone whether the object was moving or not
-    result_moving = has_moved(mov_without_notMoving, movements_name)
-    is_moving_reclst, isnt_moving_reclst = analyzing_movingness(result_moving)
-    
-    return result_togetherness_record, is_moving_reclst, isnt_moving_reclst
+    _list_moving, list_non_moving = analyzing_movingness(mov_without_notMoving, movements_name)
+
+    print(result_togetherness_record, "result_togetherness")
+    print(_list_moving, "list of those who were moving")
+    print(list_non_moving, "list of those who were not moving")
+    # return result_togetherness_record, is_moving_reclst, isnt_moving_reclst
 
 
-def analyzing_movingness(result_movingness):
-    is_moving_rec = []
-    isnt_moving_rec = []
+# def analyzing_not_movingness(result_movingness):
+#     is_moving_rec = []        
+#     for k, v in result_movingness.items():
+#         if v <= 0.50:
+#             is_moving_rec.append(k + togetherness_record[3])
+#             ## found not  moving
+#     return is_moving_rec
+
+# def analyzing_movingness(result_movingness):
+#     is_moving_rec = []
+#     isnt_moving_rec = []
         
-    for k, v in result_movingness.items():
-        if v <= 0.60:
-            is_moving_rec.append(k + togetherness_record[2])
-            ## found moving
-        else:
-            isnt_moving_rec.append(k + togetherness_record[3])
-    return is_moving_rec, isnt_moving_rec
-
+#     for k, v in result_movingness.items():
+#         if v <= 0.50:
+#             is_moving_rec.append(k + togetherness_record[2])
+#             ## found moving
+#         else:
+#             isnt_moving_rec.append(k + togetherness_record[3])
+#     return is_moving_rec, isnt_moving_rec
 
 
 def analyzing_togetherness(resultfortogetherness):
     # print(resultfortogetherness)
     for k, v in resultfortogetherness.items():
-        if v >= 0.60:
+        if v >= 0.50:
             result_togetherness_record.append(k + togetherness_record[1]) ## found together
         else:
             result_togetherness_record.append(k + togetherness_record[0]) ## far away from each other 
@@ -111,15 +121,16 @@ def who_is_together(distance_tracks_allinone_new, distance_name):
     for k,v in first5pairs.items(): 
         top_5_keys.append(k)
     
-    
+    print(top_5_keys, "top_5_keys")
     # print(len(dic_record), "before")
     for k,v in dic_record.items():
             get_object_names_in_list_frmt = k.split() # get the object names
             # print(get_object_names_in_list_frmt)
-            if get_object_names_in_list_frmt[0] in first5pairs or get_object_names_in_list_frmt[1] in first5pairs: 
-                remKeylist.append(k)
+            if  None == first5pairs.get(get_object_names_in_list_frmt[0]) and None == first5pairs.get(get_object_names_in_list_frmt[1]) : 
+                remKeylist[get_object_names_in_list_frmt[0] + space_in_between+ get_object_names_in_list_frmt[1]]= ''
     
     # print(remKeylist, "remkeylist")
+    print(len(dic_record), "before")
 
     # removing the keys fromt the dic_record
     for key in remKeylist:
@@ -129,34 +140,43 @@ def who_is_together(distance_tracks_allinone_new, distance_name):
     dic_result = {} # storing the result from the dic_record
     for k,v in dic_record.items():
         dic_result[k] = statistics.mean(v)
-
-    
     return dic_result
 
     
-def has_moved(notMoving, movements_name):
+def analyzing_movingness(notMoving, movements_name):
     # print(notMoving)
     # looping through the movement_tracks_allinone df and analyzing the movements tracking
     dic_tracking_movements ={}
-    # print(notMoving)
+    print((notMoving))
     for names in movements_name:
-        dic_tracking_movements[names] = notMoving[names].mean(skipna = True)
+        dic_tracking_movements[names] = notMoving[names].mean(axis = 0, skipna = True)
     
-    print((dic_tracking_movements), "before removal")
-    # now removing which shows the least in the video
-    for key in range(len(top_5_keys)):
-        if top_5_keys[key] in dic_tracking_movements:
-            del dic_tracking_movements[top_5_keys[key]]
+    # print((dic_tracking_movements), "before removal")
+    # now removing which shows the least in the video 
+    for k, v in dic_tracking_movements.items():
+        for key in range(len(top_5_keys)):
+            if  dic_tracking_movements.get(top_5_keys[key]) == None:
+                del dic_tracking_movements[k]
+                continue
 
+    # print((dic_tracking_movements), "after removal")
+    _result_moving = []
+    _result_not_moving = []
+    for k, v in dic_tracking_movements.items():
+        if v <= 0.50:
+            _result_moving.append(k + togetherness_record[2])
+        else:
+            _result_not_moving.append(k + togetherness_record[2])
     
-    # print(len(dic_tracking_movements), "after removal")   
-    return dic_tracking_movements
+    # print((_result_moving), "those who were walking") 
+    # print(_result_not_moving, "those who were not walking")
+    return _result_moving,_result_not_moving
 
 
 if __name__ == "__main__":
-    togetherness_record = [" were far away from each others", " were together", " was walking", "not woving"]
+    togetherness_record = [" were far away from each others", " were together", " was walking/moving", "was not moving"]
     result_togetherness_record =[]
-    remKeylist = []
+    remKeylist = {}
     top_5_keys = []
     
     # for movements tracking folder
@@ -166,12 +186,26 @@ if __name__ == "__main__":
 
     # #for distance_tracking folder
     cv_distance_tracking_files = sorted(glob('distance_tracking/*.csv'))
-    distance_tracks_allinone = pd.concat((pd.read_csv(file) for file in cv_distance_tracking_files), axis='index')
+        #  code to delete the delete files  
+    dir_path = 'distance_tracking'
+    files = os.listdir(dir_path)
+    csv_files = [f for f in files if f.endswith('.csv')]
+
+    list_files_order = {}
+
+    for file in csv_files:
+        mystr = str(file)
+        get_orderid = re.findall(r'\d+', mystr)
+        list_files_order[int(get_orderid[0])] = 'distance_tracking/'+file
+
+    sorted_dict_distance = dict(sorted(list_files_order.items()))
+    distance_tracks_allinone = pd.concat((pd.read_csv(value) for key,value  in sorted_dict_distance.items()))
     distance_tracks_allinone.to_csv("distance_tracks_allinone.csv")
     
-    # print(movement_tracks_allinone.head(10))
+    # # print(movement_tracks_allinone.head(10))
     
-    alltogether, moving_rec, not_moving = main() 
+    main() 
+    
+    # print(alltogether, "alltogether relationship record")
     # print(moving_rec, "moving record")
     # print(not_moving, "not_moving record")
-    # print(alltogether, "alltogether relationship record")

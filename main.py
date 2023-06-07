@@ -31,7 +31,7 @@ def main():
 
 
     #track the results and show = 0 means the camera opening return the frames
-    for result in model.track(source="Passengers Disembarking An Airplane In Montreal Airport.mp4", show=True, iou=0.5, stream=True):
+    for result in model.track(source="four_people.mp4", show=True, iou=0.5, stream=True):
         frame = result.orig_img
         # print(result.boxes.data)
         # print(model.names)
@@ -129,15 +129,13 @@ if __name__ == "__main__":
         exec(analyse_movements.read())
 
     # if os.path.exists("distance_tracks_allinone.csv"):
-    #   os.remove("distance_tracks_allinone.csv")
-    # if os.path.exists("before_sorting_just.csv"):
-    #   os.remove("before_sorting_just.csv")
+    #     os.remove("distance_tracks_allinone.csv")
     # if os.path.exists("create_dframe.csv"):
-    #   os.remove("create_dframe.csv")
+    #     os.remove("create_dframe.csv")
     # if os.path.exists("calculation_dis.csv"):
-    #   os.remove("calculation_dis.csv")
+    #     os.remove("calculation_dis.csv")
     # if os.path.exists("movement_tracks_allinone.csv"):
-    #   os.remove("movement_tracks_allinone.csv")
+    #     os.remove("movement_tracks_allinone.csv")
 
     # path_distance_tracking = ('distance_tracking')
     # path_movements_tracking = ('movements_tracking')

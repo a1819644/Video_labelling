@@ -6,8 +6,10 @@ from scipy.spatial import distance as dist
 import os
 
 
-def main(read_dframe):
 
+prev_midpoint = 0
+
+def main(read_dframe):
     rowcount = 0
     get_count_tracking_current = 5
     get_count_tracking_prev = 0
@@ -46,7 +48,7 @@ def get_tracked(get_count_tracking_prev, get_count_tracking_current):
 
     # saving the df files to movements_tracking folder
     create_df.to_csv(path+'/movements_tracking/' +
-                     str(get_count_tracking_current) + '.csv')
+                    str(get_count_tracking_current) + '.csv')
 
 
 def moving(lst):
@@ -55,7 +57,6 @@ def moving(lst):
 
 # stay_still calculation between pre and current arrays
 def _is_stay_still(dic_current, dic_previous):
-
     result = []  # staying false  and 1 for the true
     object_name = []
     # looping through dictonary of current, if the key/tracking id doesnt exist than we can move on
@@ -66,8 +67,10 @@ def _is_stay_still(dic_current, dic_previous):
             # print("previous...", value)
             prev_mid_point, curr_mid_point = mid_bounding_boxes(
                 dic_previous[key], dic_current[key])
-            result.append(comparing_dis_mid_points(
-                prev_mid_point, curr_mid_point))
+            print(key, prev_mid_point, curr_mid_point)
+            is_moved= comparing_dis_mid_points(
+                prev_mid_point, curr_mid_point)
+            result.append(is_moved)
 
     # print((object_name), "this is result //////////////////////////////////////////////////////////////////")
     return result, object_name
@@ -75,18 +78,17 @@ def _is_stay_still(dic_current, dic_previous):
 
 # get distance between centers
 def comparing_dis_mid_points(vx, vy):
-    if abs(vx[0] - vy[0]) < 2 and abs(vx[0] - vy[0]) < 2:
+    result = 1
+    if abs(vx[0] - vy[0]) < 4 and abs(vx[1] - vy[1]) < 4 :
         # not moving
-        return 1
+        result = 1
     else:
         # moving
-        return 0
+        result = 0
+    return result
 
 # calculate the the mid point of bounding boxes
-
-
 def mid_bounding_boxes(pre_array, current_array):
-
     # calculating the mid distance between rect1 and rect2
     prev_mid = (pre_array[0] + pre_array[2]) / \
         2, (pre_array[1] + (pre_array[3]))/2
@@ -99,8 +101,8 @@ def mid_bounding_boxes(pre_array, current_array):
 # get distance between center
 
 
-def euclidean_distance(vx, vy):
-    return int(sum((y-x)**2 for x, y in zip(vx, vy)) ** 0.5)
+def euclidean_distance(x1, y1, x2, y2):
+    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
 
 # correcting the order of the inserted arrays
@@ -151,6 +153,7 @@ def check_tracking_to_bounding_boxes_loc_fix(get_count_tracking_prev, get_count_
             dic_prev[key] = value
 
     return dic_current, dic_prev
+
 
 
 if __name__ == "__main__":

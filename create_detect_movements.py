@@ -73,7 +73,7 @@ def _is_stay_still(dic_current, dic_previous):
 
 #get distance between centers
 def comparing_dis_mid_points(vx, vy):
-    if abs(vx[0] - vy[0]) < 2 and abs(vx[0] - vy[0]) < 2:
+    if abs(vx[0] - vy[0]) < 4 and abs(vx[1] - vy[1]) < 4:
         # not moving
         return 1
     else:
