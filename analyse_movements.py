@@ -121,24 +121,34 @@ def who_is_together(distance_tracks_allinone_new, distance_name):
     for k,v in first5pairs.items(): 
         top_5_keys.append(k)
     
-    print(top_5_keys, "top_5_keys")
+    # print(top_5_keys, "top_5_keys")
     # print(len(dic_record), "before")
     for k,v in dic_record.items():
             get_object_names_in_list_frmt = k.split() # get the object names
             # print(get_object_names_in_list_frmt)
-            if  None == first5pairs.get(get_object_names_in_list_frmt[0]) and None == first5pairs.get(get_object_names_in_list_frmt[1]) : 
+            if  None == first5pairs.get(get_object_names_in_list_frmt[0]) or None == first5pairs.get(get_object_names_in_list_frmt[1]) : 
                 remKeylist[get_object_names_in_list_frmt[0] + space_in_between+ get_object_names_in_list_frmt[1]]= ''
     
     # print(remKeylist, "remkeylist")
-    print(len(dic_record), "before")
+    # print(len(dic_record), "before")
 
     # removing the keys fromt the dic_record
     for key in remKeylist:
         del dic_record[key]
-    print(len(dic_record), "after")
+    # print(len(dic_record), "after")
+    
+    # deleting the keys like this "person:1 person:2" and " person:2 person:1" as they both 
+    # represent same things
+    fresh_results = {}
+    for k,v in dic_record.items():
+        get_object_names_in_list_frmt = k.split()
+        temp = get_object_names_in_list_frmt[1] + space_in_between + get_object_names_in_list_frmt[0]
+        if fresh_results.get(k) == None and  fresh_results.get(temp) == None:
+            fresh_results[k] = v    
+    # print(len(fresh_results), "del_duplicates_keys")
     
     dic_result = {} # storing the result from the dic_record
-    for k,v in dic_record.items():
+    for k,v in fresh_results.items():
         dic_result[k] = statistics.mean(v)
     return dic_result
 
@@ -147,7 +157,6 @@ def analyzing_movingness(notMoving, movements_name):
     # print(notMoving)
     # looping through the movement_tracks_allinone df and analyzing the movements tracking
     dic_tracking_movements ={}
-    print((notMoving))
     for names in movements_name:
         dic_tracking_movements[names] = notMoving[names].mean(axis = 0, skipna = True)
     
